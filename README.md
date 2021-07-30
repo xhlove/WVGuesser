@@ -40,6 +40,14 @@ pip install wasmer_compiler_cranelift==1.0.0
 
 ![](/images/oCam_2021_07_30_20_58_41_915.gif)
 
+# main.exe
+
+使用mingw64编译
+
+```bash
+g++ -o main -pthread -std=gnu++0x main.cpp misc.cpp codelift.cpp algebra.cpp allocate.cpp integer.cpp
+```
+
 # 打包
 
 ```bash
