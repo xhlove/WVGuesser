@@ -83,8 +83,8 @@ class Instance:
             else:
                 offset += 1
         print(f'==> 耗时 {time.time() - ts:.2f}s')
-        print("Output")
-        st = binascii.b2a_hex(bytes(buf))
+        print("Output", buf)
+        st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
         outp = self.getDeoaep(st)
         print(outp)
         if len(outp) < 10:
@@ -103,6 +103,9 @@ class Instance:
         return self.ccall('_guessInput', str, text)
 
     def getDeoaep(self, text: str):
+        mem = bytes(self.memory.uint8_view()[:])
+        with open('mem.bin', 'wb') as f:
+            f.write(mem)
         return self.ccall('_getDeoaep', str, text)
 
     def stackAlloc(self, length: int):
