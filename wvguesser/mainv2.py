@@ -17,7 +17,7 @@ import ctypes
 import socket
 
 
-ctypes.windll.kernel32.SetConsoleTitleW("WVGuesser v1.1.0")
+ctypes.windll.kernel32.SetConsoleTitleW("WVGuesser v1.3.0")
 
 with open("WVGuesserConf.json") as json_data:
     config = json.load(json_data)
@@ -123,7 +123,7 @@ def runv2(hex_session_key: str):
         else:
             offset += 1
     # print(f'==> Elapsed time {time.time() - ts:.2f}s')
-    ctypes.windll.kernel32.SetConsoleTitleW(f'WVGuesser v1.1.0 - Elapsed time {time.time() - ts:.2f}s')
+    ctypes.windll.kernel32.SetConsoleTitleW(f'WVGuesser v1.3.0 - Elapsed time {time.time() - ts:.2f}s')
     # print("Output", buf)
     outp = getDeoaep(clients[0], binascii.b2a_hex(bytes(buf)))
     # print(outp)
