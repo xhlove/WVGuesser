@@ -38,7 +38,7 @@ According to the existing algorithm, it can only be single-threaded
 
 # Packages
 
-``bash
+```bash
 pyinstaller -n wvguesser_v1.0.0 -F wvguesser\__main__.py
 ```
 
