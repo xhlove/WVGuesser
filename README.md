@@ -1,4 +1,4 @@
-! [](https://imgur.com/cSwaXxz.png)
+![](https://imgur.com/cSwaXxz.png)
 
 `WVGuesser` is an offline version implementation of [widevine-l3-guesser](https://github.com/Satsuoni/widevine-l3-guesser)
 
@@ -26,7 +26,7 @@ According to the existing algorithm, it can only be single threaded
 
 Demo
 
-! [](/images/oCam_2021_07_30_20_58_41_915.gif)
+![](/images/oCam_2021_07_30_20_58_41_915.gif)
 
 # main.exe
 
@@ -44,6 +44,6 @@ pyinstaller -n wvguesser_v1.1.0 -F wvguesser\__main__.py
 
 # Suggest a better solution
 
-~Not very good at C++ so I used python~
+~~Not very good at C++ so I used python~~
 
 - Pure C++ completion call
