@@ -1,49 +1,49 @@
-![](https://imgur.com/cSwaXxz.png)
+! [](https://imgur.com/cSwaXxz.png)
 
-`WVGuesser` is a python implementation of [widevine-l3-guesser](https://github.com/Satsuoni/widevine-l3-guesser)
+`WVGuesser` is an offline version implementation of [widevine-l3-guesser](https://github.com/Satsuoni/widevine-l3-guesser)
 
 # Use
 
 ## Plugin installation
 
-Unzip `WVGuesser-plugin.zip`, then `load the unzipped extension`
+Unzip `WVGuesser-plugin.zip` and then `load the unzipped extensions`
 
-Open the website that uses widevine, and after playing the video, it will automatically download a configuration file
+Open the website that uses widevine, and after playing the video a configuration file will be downloaded automatically
 
 that is `offline_config.json`, put it into the current directory
 
 If you are just testing, you can skip this step, there is already a built-in configuration file
 
-## local crack
+## Locally decrypted
 
-If it is the exe version, directly drag `offline_config.json` to `wvguesser_v1.0.0.exe` can be
-
-First install [`wasmer-python`](https://github.com/wasmerio/wasmer-python)
-
-```bash
-pip install pycryptodome
-pip install wasmer==1.0.0
-pip install wasmer_compiler_cranelift==1.0.0
-```
+If it is exe version, directly drag `offline_config.json` to `wvguesser_v1.1.0.exe`.
 
 Run the program and wait for decryption
 
-- `python -m wvguesser.main`
+- `python -m wvguesser.mainv2`
 
-Call the exe version, which is relatively faster
+According to the existing algorithm, it can only be single threaded
 
-- ``python -m wvguesser.mainv2``
+Demo
 
-According to the existing algorithm, it can only be single-threaded
+! [](/images/oCam_2021_07_30_20_58_41_915.gif)
 
-# Packages
+# main.exe
+
+Compile with mingw64
 
 ```bash
-pyinstaller -n wvguesser_v1.0.0 -F wvguesser\__main__.py
+g++ -o main -pthread -std=gnu++0x -static main.cpp misc.cpp codelift.cpp algebra.cpp allocate.cpp integer.cpp Socket.cpp -lws2_32
+```
+
+# package
+
+```bash
+pyinstaller -n wvguesser_v1.1.0 -F wvguesser\__main__.py
 ```
 
 # Suggest a better solution
 
 ~Not very good at C++ so I used python~
 
-- Use C++ to complete the call, multi-threaded to speed up
+- Pure C++ completion call
