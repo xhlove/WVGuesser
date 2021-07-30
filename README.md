@@ -29,7 +29,7 @@ Demo
 ![](/images/oCam_2021_07_30_20_58_41_915.gif)
 
 
-# package
+# Build
 
 ```bash
 pyinstaller -n wvguesser_v1.1.0 -F wvguesser\__main__.py
