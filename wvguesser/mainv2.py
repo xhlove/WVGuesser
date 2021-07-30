@@ -20,7 +20,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(('127.0.0.1', port))
 
 
-def handle_exit():
+def handle_exit(signum, frame):
     p.kill()
 
 
@@ -54,15 +54,13 @@ def run(hex_session_key: str):
         while j < 8:
             buf[offset] = j
             st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
-            # print(st)
             val = guessInput(st)
-            # print(val)
             sub = int(val[len(val) - bt * 2 - 2:len(val) - bt * 2], 16)
             got = (sub >> (offs * 2)) & 3
             gtail = val[len(hex_session_key) - bt * 2:len(hex_session_key) + bt * 2]
             if got == desired and gtail == destail:
-                if offset % 16 == 2:
-                    print(val)
+                # if offset % 16 == 2:
+                #     print(val)
                 break
             j += 1
         if j == 8:
@@ -82,7 +80,7 @@ def run(hex_session_key: str):
         else:
             offset += 1
     print(f'==> time used {time.time() - ts:.2f}s')
-    print("Output", buf)
+    # print("Output", buf)
     st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
     outp = getDeoaep(st)
     print(outp)
