@@ -28,11 +28,11 @@ pip install wasmer_compiler_cranelift==1.0.0
 
 - `python -m wvguesser.main`
 
-**当前是单线程版本**
+调用exe的版本，相对更快
 
-# TODO
+- `python -m wvguesser.mainv2`
 
-- 多线程
+根据现有算法，只能是单线程
 
 # 推荐更好的方案
 

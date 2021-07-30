@@ -53,7 +53,9 @@ class Instance:
             while j < 8:
                 buf[offset] = j
                 st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
+                print(st)
                 val = self.guessInput(st)
+                print(val)
                 sub = int(val[len(val) - bt * 2 - 2:len(val) - bt * 2], 16)
                 got = (sub >> (offs * 2)) & 3
                 gtail = val[len(hex_session_key) - bt * 2:len(hex_session_key) + bt * 2]

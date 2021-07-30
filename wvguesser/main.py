@@ -15,7 +15,7 @@ module = Module(store, wasm)
 # 初始化实例 内存+模块+外部导入函数
 instance = Instance(module, store)
 
-config = json.loads(Path('wvguesser/offline_config.json').read_text(encoding='utf-8'))
+config = json.loads(Path('wvguesser/offline_config_yk.json').read_text(encoding='utf-8'))
 
 clear_session_key = instance.run(config['enc_session_key'])
 instance.decrypt_license_keys(clear_session_key, config['enc_key'], config['key_infos'])
