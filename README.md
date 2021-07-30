@@ -7,6 +7,7 @@
 首先安装[`wasmer-python`](https://github.com/wasmerio/wasmer-python)
 
 ```bash
+pip install pycryptodome
 pip install wasmer==1.0.0
 pip install wasmer_compiler_cranelift==1.0.0
 ```

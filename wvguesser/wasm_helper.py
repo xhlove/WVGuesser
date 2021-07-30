@@ -2,7 +2,7 @@ import sys
 import math
 import time
 import binascii
-from Crypto.Cipher import PKCS1_OAEP, AES
+from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
 from Crypto.Util import Padding
 
@@ -36,7 +36,7 @@ class Instance:
             'stackAlloc': self.exports.s,
         }
 
-    def run(self, hex_session_key: str, key_infos: dict):
+    def run(self, hex_session_key: str):
         ts = time.time()
         self.initRuntime()
         encKey = binascii.a2b_hex(hex_session_key)
