@@ -32,7 +32,7 @@ Demo
 # Build
 
 ```bash
-pyinstaller -n wvguesser_v1.1.0 -F wvguesser\__main__.py
+pyinstaller -n wvguesser_v1.3.0 -F wvguesser\__main__.py
 ```
 
 # Changes done
