@@ -18,6 +18,6 @@ instance = Instance(module, store)
 config = json.loads(Path('wvguesser/offline_config.json').read_text(encoding='utf-8'))
 
 clear_session_key = instance.run(config['enc_session_key'])
-instance.decrypt_license_keys('a8ce2444ef0826fe0b5cb9fd6017c0f6', config['enc_key'], config['key_infos'])
+instance.decrypt_license_keys(clear_session_key, config['enc_key'], config['key_infos'])
 
 # python -m wvguesser.main
