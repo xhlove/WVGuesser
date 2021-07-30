@@ -36,6 +36,10 @@ pip install wasmer_compiler_cranelift==1.0.0
 
 根据现有算法，只能是单线程
 
+演示
+
+![](/images/oCam_2021_07_30_20_58_41_915.gif)
+
 # 打包
 
 ```bash
@@ -46,4 +50,4 @@ pyinstaller -n wvguesser_v1.0.0 -F wvguesser\__main__.py
 
 ~~不太会C++所以就用了python~~
 
-- 使用C++完成调用，多线程加快速度
+- 纯C++完成调用
