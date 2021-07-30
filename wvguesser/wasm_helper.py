@@ -2,6 +2,10 @@ import sys
 import math
 import time
 import binascii
+from Crypto.Cipher import PKCS1_OAEP, AES
+from Crypto.Hash import CMAC
+from Crypto.Util import Padding
+
 from wasmer import Store, Type, Function, FunctionType, Module, ImportObject
 
 from wasmer import Instance as WasmerInstance
@@ -32,7 +36,7 @@ class Instance:
             'stackAlloc': self.exports.s,
         }
 
-    def run(self, hex_session_key: str):
+    def run(self, hex_session_key: str, key_infos: dict):
         ts = time.time()
         self.initRuntime()
         encKey = binascii.a2b_hex(hex_session_key)
@@ -90,7 +94,19 @@ class Instance:
         if len(outp) < 10:
             assert 1 == 0, 'Could not remove padding, probably invalid key'
         print(st)
-        return binascii.a2b_hex(outp)
+        return binascii.a2b_hex(outp).decode('utf-8')
+
+    def decrypt_license_keys(self, session_key: str, context_enc: str, key_infos: dict):
+        cmac_obj = CMAC.new(session_key.encode('utf-8'), ciphermod=AES)
+        cmac_obj.update(binascii.a2b_hex(context_enc))
+
+        enc_cmac_key = cmac_obj.digest()
+
+        for index, [keyId, keyData, keyIv] in key_infos.items():
+            cipher = AES.new(enc_cmac_key, AES.MODE_CBC, iv=binascii.a2b_hex(keyIv))
+            decrypted_key = cipher.decrypt(binascii.a2b_hex(keyData))
+            clear_key = Padding.unpad(decrypted_key, 16)
+            print(f'<id>:<k> {keyId}:{clear_key}')
 
     def _freeStr(self, ptr: int):
         return self.export_configs['_freeStr'](ptr)
