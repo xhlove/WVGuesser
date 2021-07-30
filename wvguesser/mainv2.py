@@ -29,7 +29,7 @@ def run(hex_session_key: str):
     buf = [0] * 1026
     offset = 2
     while offset < 1026:
-        print(f'当前进度 {(offset - 2) / 1024 * 100:.2f}% 耗时 {time.time() - ts:.2f}s')
+        print(f'Current Progress {(offset - 2) / 1024 * 100:.2f}% Elapsed time {time.time() - ts:.2f}s')
         bt = math.floor((offset - 2) / 4)
         offs = math.floor((offset - 2) % 4)
         desired = (encKey[len(encKey) - bt - 1] >> (offs * 2)) & 3
@@ -65,7 +65,7 @@ def run(hex_session_key: str):
                 buf[offset] += 1
         else:
             offset += 1
-    print(f'==> 耗时 {time.time() - ts:.2f}s')
+    print(f'==> Elapsed time {time.time() - ts:.2f}s')
     print("Output", buf)
     st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
     outp = getDeoaep(st)
