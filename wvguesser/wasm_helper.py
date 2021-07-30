@@ -48,21 +48,15 @@ class Instance:
             bt = math.floor((offset - 2) / 4)
             offs = math.floor((offset - 2) % 4)
             desired = (encKey[len(encKey) - bt - 1] >> (offs * 2)) & 3
-            _start = len(hex_session_key) - bt * 2
-            destail = hex_session_key[_start:_start + bt * 2]
-            val = ''
+            destail = hex_session_key[len(hex_session_key) - bt * 2:len(hex_session_key)]
             j = buf[offset]
-            ccount = 0
             while j < 8:
-                ccount += 1
                 buf[offset] = j
                 st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
                 val = self.guessInput(st)
-                _start = len(val) - bt * 2 - 2
-                sub = int(val[_start:_start + 2], 16)
+                sub = int(val[len(val) - bt * 2 - 2:len(val) - bt * 2], 16)
                 got = (sub >> (offs * 2)) & 3
-                _start = len(hex_session_key) - bt * 2
-                gtail = val[_start:_start + bt * 2]
+                gtail = val[len(hex_session_key) - bt * 2:len(hex_session_key) + bt * 2]
                 if got == desired and gtail == destail:
                     if offset % 16 == 2:
                         print(val)
