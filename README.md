@@ -35,6 +35,10 @@ Demo
 pyinstaller -n wvguesser_v1.1.0 -F wvguesser\__main__.py
 ```
 
+# Changes done
+
+Removal of excessive prints, addition of a notification system (to be specified in the build, activated by default), English translation & "BruteForce" results sent in Json.
+
 # Suggest a better solution
 
 ~~Not very good at C++ so I used python~~
