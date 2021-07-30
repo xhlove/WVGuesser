@@ -44,10 +44,10 @@ class Instance:
         buf = [0] * 1026
         offset = 2
         while offset < 1026:
+            print(f'当前进度 {(offset - 2) / 1024 * 100:.2f}% 耗时 {time.time() - ts:.2f}s')
             bt = math.floor((offset - 2) / 4)
             offs = math.floor((offset - 2) % 4)
             desired = (encKey[len(encKey) - bt - 1] >> (offs * 2)) & 3
-            print("desired", desired, offset, bt, offs)
             _start = len(hex_session_key) - bt * 2
             destail = hex_session_key[_start:_start + bt * 2]
             val = ''
@@ -63,13 +63,11 @@ class Instance:
                 got = (sub >> (offs * 2)) & 3
                 _start = len(hex_session_key) - bt * 2
                 gtail = val[_start:_start + bt * 2]
-                # print("", j, offset, sub, got, desired, "|||", gtail, destail)
                 if got == desired and gtail == destail:
                     if offset % 16 == 2:
-                        print(f'耗时 {time.time() - ts:.2f}s', val)
+                        print(val)
                     break
                 j += 1
-            # print('jjj', j)
             if j == 8:
                 buf[offset] = 0
                 offset -= 1
