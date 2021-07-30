@@ -1,25 +1,41 @@
-import os
 import sys
 import json
 import math
 import time
+import signal
+import socket
 import binascii
 import subprocess
 from pathlib import Path
+from random import randint
 from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
 
+
+port = randint(20000, 50000)
 MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
+p = subprocess.Popen(f'{MAIN_EXE} {port}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+time.sleep(1)
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect(('127.0.0.1', port))
+
+
+def handle_exit():
+    p.kill()
+
+
+def call_func(msg: bytes):
+    client.send(msg.encode("utf-8"))
+    resp = client.recv(1024)
+    return resp.decode('utf-8').strip()
 
 
 def guessInput(text: str):
-    resp = subprocess.check_output(f'{MAIN_EXE} guessInput {text}')
-    return resp.decode('utf-8').strip()
+    return call_func(f'guessInput|{text}\n')
 
 
 def getDeoaep(text: str):
-    resp = subprocess.check_output(f'{MAIN_EXE} getDeoaep {text}')
-    return resp.decode('utf-8').strip()
+    return call_func(f'getDeoaep|{text}\n')
 
 
 def run(hex_session_key: str):
@@ -29,7 +45,7 @@ def run(hex_session_key: str):
     buf = [0] * 1026
     offset = 2
     while offset < 1026:
-        print(f'当前进度 {(offset - 2) / 1024 * 100:.2f}% 耗时 {time.time() - ts:.2f}s')
+        print(f'[Progress] {(offset - 2) / 1024 * 100:.2f}% time used {time.time() - ts:.2f}s')
         bt = math.floor((offset - 2) / 4)
         offs = math.floor((offset - 2) % 4)
         desired = (encKey[len(encKey) - bt - 1] >> (offs * 2)) & 3
@@ -65,7 +81,7 @@ def run(hex_session_key: str):
                 buf[offset] += 1
         else:
             offset += 1
-    print(f'==> 耗时 {time.time() - ts:.2f}s')
+    print(f'==> time used {time.time() - ts:.2f}s')
     print("Output", buf)
     st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
     outp = getDeoaep(st)
@@ -73,6 +89,7 @@ def run(hex_session_key: str):
     if len(outp) < 10:
         assert 1 == 0, 'Could not remove padding, probably invalid key'
     print(st)
+    p.kill()
     return outp
 
 
@@ -90,10 +107,12 @@ def decrypt_license_keys(session_key: str, context_enc: str, key_infos: dict):
 
 
 def main():
+    signal.signal(signal.SIGINT, handle_exit)
+    signal.signal(signal.SIGTERM, handle_exit)
     if len(sys.argv) == 2:
         path = sys.argv[1]
     else:
-        path = (Path('.') / 'offline_config.json').resolve().as_posix()
+        path = (Path('.') / 'offline_config_yk.json').resolve().as_posix()
     config = json.loads(Path(path).read_text(encoding='utf-8'))
     clear_session_key = run(config['enc_session_key'])
     decrypt_license_keys(clear_session_key, config['enc_key'], config['key_infos'])
