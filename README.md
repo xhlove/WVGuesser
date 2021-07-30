@@ -28,13 +28,6 @@ Demo
 
 ![](/images/oCam_2021_07_30_20_58_41_915.gif)
 
-# main.exe
-
-Compile with mingw64
-
-```bash
-g++ -o main -pthread -std=gnu++0x -static main.cpp misc.cpp codelift.cpp algebra.cpp allocate.cpp integer.cpp Socket.cpp -lws2_32
-```
 
 # package
 
