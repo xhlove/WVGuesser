@@ -16,7 +16,7 @@
 
 ## 本地破解
 
-如果是exe版本，直接将`offline_config.json`拖到`wvguesser_v1.0.0.exe`上即可
+如果是exe版本，直接将`offline_config.json`拖到`wvguesser_v1.1.0.exe`上即可
 
 运行程序，等待解密
 
@@ -33,13 +33,13 @@
 使用mingw64编译
 
 ```bash
-g++ -o main -pthread -std=gnu++0x main.cpp misc.cpp codelift.cpp algebra.cpp allocate.cpp integer.cpp
+g++ -o main -pthread -std=gnu++0x -static main.cpp misc.cpp codelift.cpp algebra.cpp allocate.cpp integer.cpp Socket.cpp -lws2_32
 ```
 
 # 打包
 
 ```bash
-pyinstaller -n wvguesser_v1.0.0 -F wvguesser\__main__.py
+pyinstaller -n wvguesser_v1.1.0 -F wvguesser\__main__.py
 ```
 
 # 推荐更好的方案
