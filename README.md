@@ -20,7 +20,7 @@ If it is the exe version, directly drag `offline_config.json` to `wvguesser_v1.0
 
 First install [`wasmer-python`](https://github.com/wasmerio/wasmer-python)
 
-``bash
+```bash
 pip install pycryptodome
 pip install wasmer==1.0.0
 pip install wasmer_compiler_cranelift==1.0.0
