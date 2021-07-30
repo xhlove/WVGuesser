@@ -1,6 +1,6 @@
 # WVGuesser
 
-`WVGuesser`是[widevine-l3-guesser](https://github.com/Satsuoni/widevine-l3-guesser)的python实现
+`WVGuesser`是[widevine-l3-guesser](https://github.com/Satsuoni/widevine-l3-guesser)的离线版本实现
 
 # 使用
 
@@ -18,19 +18,7 @@
 
 如果是exe版本，直接将`offline_config.json`拖到`wvguesser_v1.0.0.exe`上即可
 
-首先安装[`wasmer-python`](https://github.com/wasmerio/wasmer-python)
-
-```bash
-pip install pycryptodome
-pip install wasmer==1.0.0
-pip install wasmer_compiler_cranelift==1.0.0
-```
-
 运行程序，等待解密
-
-- `python -m wvguesser.main`
-
-调用exe的版本，相对更快
 
 - `python -m wvguesser.mainv2`
 
