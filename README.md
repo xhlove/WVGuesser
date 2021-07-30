@@ -1,4 +1,4 @@
-# WVGuesser
+![](https://imgur.com/cSwaXxz.png)
 
 `WVGuesser` is a python implementation of [widevine-l3-guesser](https://github.com/Satsuoni/widevine-l3-guesser)
 
