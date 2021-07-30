@@ -26,7 +26,7 @@ According to the existing algorithm, it can only be single threaded
 
 Demo
 
-![](/images/oCam_2021_07_30_20_58_41_915.gif)
+![](https://i.imgur.com/8BNnZRw.gif)
 
 
 # Build
