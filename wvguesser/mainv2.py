@@ -8,8 +8,12 @@ import subprocess
 from pathlib import Path
 from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
+from notifypy import Notify
 
 MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
+
+
+notify_me = True
 
 
 def guessInput(text: str):
@@ -90,8 +94,19 @@ def decrypt_license_keys(session_key: str, context_enc: str, key_infos: dict):
         # clear_key = Padding.unpad(decrypted_key, 16)
         list_key.append({'id': keyId, 'k': decrypted_key.hex()})
         #print(f'<id>:<k> {keyId}:{decrypted_key.hex()}')
-    jsonStr = json.dumps(list_key)
-    print(jsonStr)
+    if len(list_key) >= 1:
+        jsonStr = json.dumps(list_key)
+        print(jsonStr)
+
+        if notify_me:
+            notification = Notify()
+            notification.title = "WVGuesser"
+            notification.message = f"{len(list_key)} keys found."
+            notification.icon = "WVGUESSR.png"
+            notification.send()
+    else:
+        print("No keys available.")
+
 
 def main():
     if len(sys.argv) == 2:
