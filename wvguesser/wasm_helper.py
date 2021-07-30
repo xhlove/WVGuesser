@@ -94,10 +94,10 @@ class Instance:
         if len(outp) < 10:
             assert 1 == 0, 'Could not remove padding, probably invalid key'
         print(st)
-        return binascii.a2b_hex(outp).decode('utf-8')
+        return outp
 
     def decrypt_license_keys(self, session_key: str, context_enc: str, key_infos: dict):
-        cmac_obj = CMAC.new(session_key.encode('utf-8'), ciphermod=AES)
+        cmac_obj = CMAC.new(binascii.a2b_hex(session_key), ciphermod=AES)
         cmac_obj.update(binascii.a2b_hex(context_enc))
 
         enc_cmac_key = cmac_obj.digest()
@@ -105,8 +105,8 @@ class Instance:
         for index, [keyId, keyData, keyIv] in key_infos.items():
             cipher = AES.new(enc_cmac_key, AES.MODE_CBC, iv=binascii.a2b_hex(keyIv))
             decrypted_key = cipher.decrypt(binascii.a2b_hex(keyData))
-            clear_key = Padding.unpad(decrypted_key, 16)
-            print(f'<id>:<k> {keyId}:{clear_key}')
+            # clear_key = Padding.unpad(decrypted_key, 16)
+            print(f'<id>:<k> {keyId}:{decrypted_key.hex()}')
 
     def _freeStr(self, ptr: int):
         return self.export_configs['_freeStr'](ptr)
@@ -119,9 +119,6 @@ class Instance:
         return self.ccall('_guessInput', str, text)
 
     def getDeoaep(self, text: str):
-        mem = bytes(self.memory.uint8_view()[:])
-        with open('mem.bin', 'wb') as f:
-            f.write(mem)
         return self.ccall('_getDeoaep', str, text)
 
     def stackAlloc(self, length: int):

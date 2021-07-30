@@ -4,6 +4,18 @@
 
 # 使用
 
+## 插件安装
+
+解压`WVGuesser-plugin.zip`，然后`加载已解压的扩展程序`
+
+打开使用widevine的网站，播放视频后会自动下载一个配置文件
+
+即`offline_config.json`，把它复制到`wvguesser`目录下即可
+
+如果只是测试，可以跳过这一步，已经内置了一个配置文件了
+
+## 本地破解
+
 首先安装[`wasmer-python`](https://github.com/wasmerio/wasmer-python)
 
 ```bash
@@ -12,24 +24,15 @@ pip install wasmer==1.0.0
 pip install wasmer_compiler_cranelift==1.0.0
 ```
 
-浏览器端拦截`licenseResponse.session_key`，替换本地`main.py`文件中的内容
-
-执行下面的命令开始破解
+运行程序，等待解密
 
 - `python -m wvguesser.main`
 
-# 补充
-
-**当前完成部分实现**
-
-- **当前仅实现求解session_key部分**
-- **当前是单线程版本**
-- **解密license.key还没有完成**
+**当前是单线程版本**
 
 # TODO
 
 - 多线程
-- 完整实现，需要`licenseResponse.session_key`和`license.key`
 
 # 推荐更好的方案
 
