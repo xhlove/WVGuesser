@@ -8,6 +8,10 @@ import subprocess
 from pathlib import Path
 from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
+from colored import fg, bg, attr
+
+red = fg('4')
+reset = attr('reset')
 
 MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
 
@@ -25,11 +29,11 @@ def getDeoaep(text: str):
 def run(hex_session_key: str):
     ts = time.time()
     encKey = binascii.a2b_hex(hex_session_key)
-    print(hex_session_key)
+    #print(hex_session_key)
     buf = [0] * 1026
     offset = 2
     while offset < 1026:
-        print(f'[Progress] {(offset - 2) / 1024 * 100:.2f}% / {time.time() - ts:.2f}s')
+        print(f'{red}[Progress]{reset} {(offset - 2) / 1024 * 100:.2f}% / {time.time() - ts:.2f}s', end="\r")
         bt = math.floor((offset - 2) / 4)
         offs = math.floor((offset - 2) % 4)
         desired = (encKey[len(encKey) - bt - 1] >> (offs * 2)) & 3
@@ -46,7 +50,8 @@ def run(hex_session_key: str):
             gtail = val[len(hex_session_key) - bt * 2:len(hex_session_key) + bt * 2]
             if got == desired and gtail == destail:
                 if offset % 16 == 2:
-                    print(val)
+                    #print(val)
+                    pass
                 break
             j += 1
         if j == 8:
