@@ -60,7 +60,7 @@ int main(int argc,char **argv)
     std::string::size_type sz;
     int port = std::stoi(argv[1], &sz);
     cout << "listen at:" << port << endl;
-    SocketServer in(port, 5);
+    SocketServer in(port, 10);
     while (1) {
         Socket* s=in.Accept();
         unsigned ret;
