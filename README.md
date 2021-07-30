@@ -1,49 +1,49 @@
 # WVGuesser
 
-`WVGuesser`是[widevine-l3-guesser](https://github.com/Satsuoni/widevine-l3-guesser)的python实现
+`WVGuesser` is a python implementation of [widevine-l3-guesser](https://github.com/Satsuoni/widevine-l3-guesser)
 
-# 使用
+# Use
 
-## 插件安装
+## Plugin installation
 
-解压`WVGuesser-plugin.zip`，然后`加载已解压的扩展程序`
+Unzip `WVGuesser-plugin.zip`, then `load the unzipped extension`
 
-打开使用widevine的网站，播放视频后会自动下载一个配置文件
+Open the website that uses widevine, and after playing the video, it will automatically download a configuration file
 
-即`offline_config.json`，把它放到当前目录下即可
+that is `offline_config.json`, put it into the current directory
 
-如果只是测试，可以跳过这一步，已经内置了一个配置文件了
+If you are just testing, you can skip this step, there is already a built-in configuration file
 
-## 本地破解
+## local crack
 
-如果是exe版本，直接将`offline_config.json`拖到`wvguesser_v1.0.0.exe`上即可
+If it is the exe version, directly drag `offline_config.json` to `wvguesser_v1.0.0.exe` can be
 
-首先安装[`wasmer-python`](https://github.com/wasmerio/wasmer-python)
+First install [`wasmer-python`](https://github.com/wasmerio/wasmer-python)
 
-```bash
+``bash
 pip install pycryptodome
 pip install wasmer==1.0.0
 pip install wasmer_compiler_cranelift==1.0.0
 ```
 
-运行程序，等待解密
+Run the program and wait for decryption
 
 - `python -m wvguesser.main`
 
-调用exe的版本，相对更快
+Call the exe version, which is relatively faster
 
-- `python -m wvguesser.mainv2`
+- ``python -m wvguesser.mainv2``
 
-根据现有算法，只能是单线程
+According to the existing algorithm, it can only be single-threaded
 
-# 打包
+# Packages
 
-```bash
+``bash
 pyinstaller -n wvguesser_v1.0.0 -F wvguesser\__main__.py
 ```
 
-# 推荐更好的方案
+# Suggest a better solution
 
-~~不太会C++所以就用了python~~
+~~ Not very good at C++ so I used python~~
 
-- 使用C++完成调用，多线程加快速度
+- Use C++ to complete the call, multi-threaded to speed up
