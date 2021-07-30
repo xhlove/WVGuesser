@@ -10,11 +10,13 @@
 
 打开使用widevine的网站，播放视频后会自动下载一个配置文件
 
-即`offline_config.json`，把它复制到`wvguesser`目录下即可
+即`offline_config.json`，把它放到当前目录下即可
 
 如果只是测试，可以跳过这一步，已经内置了一个配置文件了
 
 ## 本地破解
+
+如果是exe版本，直接将`offline_config.json`拖到`wvguesser_v1.0.0.exe`上即可
 
 首先安装[`wasmer-python`](https://github.com/wasmerio/wasmer-python)
 
@@ -33,6 +35,12 @@ pip install wasmer_compiler_cranelift==1.0.0
 - `python -m wvguesser.mainv2`
 
 根据现有算法，只能是单线程
+
+# 打包
+
+```bash
+pyinstaller -n wvguesser_v1.0.0 -F wvguesser\__main__.py
+```
 
 # 推荐更好的方案
 

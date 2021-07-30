@@ -1,20 +1,24 @@
-import subprocess
+import os
+import sys
 import json
 import math
 import time
 import binascii
+import subprocess
 from pathlib import Path
 from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
 
+MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
+
 
 def guessInput(text: str):
-    resp = subprocess.check_output(f'./wvguesser/main.exe guessInput {text}')
+    resp = subprocess.check_output(f'{MAIN_EXE} guessInput {text}')
     return resp.decode('utf-8').strip()
 
 
 def getDeoaep(text: str):
-    resp = subprocess.check_output(f'./wvguesser/main.exe getDeoaep {text}')
+    resp = subprocess.check_output(f'{MAIN_EXE} getDeoaep {text}')
     return resp.decode('utf-8').strip()
 
 
@@ -86,9 +90,14 @@ def decrypt_license_keys(session_key: str, context_enc: str, key_infos: dict):
 
 
 def main():
-    config = json.loads(Path('wvguesser/offline_config.json').read_text(encoding='utf-8'))
+    if len(sys.argv) == 2:
+        path = sys.argv[1]
+    else:
+        path = (Path('.') / 'offline_config.json').resolve().as_posix()
+    config = json.loads(Path(path).read_text(encoding='utf-8'))
     clear_session_key = run(config['enc_session_key'])
     decrypt_license_keys(clear_session_key, config['enc_key'], config['key_infos'])
+    sys.stdin.read()
 
 
 if __name__ == '__main__':
