@@ -8,10 +8,6 @@ import subprocess
 from pathlib import Path
 from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
-from colored import fg, bg, attr
-
-red = fg('4')
-reset = attr('reset')
 
 MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
 
@@ -33,7 +29,7 @@ def run(hex_session_key: str):
     buf = [0] * 1026
     offset = 2
     while offset < 1026:
-        print(f'{red}[Progress]{reset} {(offset - 2) / 1024 * 100:.2f}% / {time.time() - ts:.2f}s', end="\r")
+        print(f'[WVGuesser] {(offset - 2) / 1024 * 100:.2f}% / {time.time() - ts:.2f}s', end="\r")
         bt = math.floor((offset - 2) / 4)
         offs = math.floor((offset - 2) % 4)
         desired = (encKey[len(encKey) - bt - 1] >> (offs * 2)) & 3
@@ -70,14 +66,14 @@ def run(hex_session_key: str):
                 buf[offset] += 1
         else:
             offset += 1
-    print(f'==> Elapsed time {time.time() - ts:.2f}s')
-    print("Output", buf)
+    #print(f'==> Elapsed time {time.time() - ts:.2f}s')
+    #print("Output", buf)
     st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
     outp = getDeoaep(st)
-    print(outp)
+    #print(outp)
     if len(outp) < 10:
         assert 1 == 0, 'Could not remove padding, probably invalid key'
-    print(st)
+    #print(st)
     return outp
 
 
@@ -87,12 +83,15 @@ def decrypt_license_keys(session_key: str, context_enc: str, key_infos: dict):
 
     enc_cmac_key = cmac_obj.digest()
 
+    list_key = []
     for index, [keyId, keyData, keyIv] in key_infos.items():
         cipher = AES.new(enc_cmac_key, AES.MODE_CBC, iv=binascii.a2b_hex(keyIv))
         decrypted_key = cipher.decrypt(binascii.a2b_hex(keyData))
         # clear_key = Padding.unpad(decrypted_key, 16)
-        print(f'<id>:<k> {keyId}:{decrypted_key.hex()}')
-
+        list_key.append({'id': keyId, 'k': decrypted_key.hex()})
+        #print(f'<id>:<k> {keyId}:{decrypted_key.hex()}')
+    jsonStr = json.dumps(list_key)
+    print(jsonStr)
 
 def main():
     if len(sys.argv) == 2:
