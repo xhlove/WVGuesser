@@ -44,6 +44,6 @@ pyinstaller -n wvguesser_v1.0.0 -F wvguesser\__main__.py
 
 # Suggest a better solution
 
-~~ Not very good at C++ so I used python ~~
+~Not very good at C++ so I used python~
 
 - Use C++ to complete the call, multi-threaded to speed up
