@@ -37,7 +37,6 @@ def call_func(p: subprocess.Popen, msg: str):
     p.stdin.write(msg)
     p.stdin.flush()
     resp = p.stdout.readline()
-    # print('resp', resp.decode('utf-8').strip())
     return resp.decode('utf-8').strip()
 
 
@@ -48,17 +47,15 @@ def multi_guessInput(bufs: List[str]):
     return results
 
 
-def guessInput(server, buf: str):
-    # return call_func(server, f'guessInput|{buf}\n')
+def guessInput(server, buf: bytes):
     return call_func(server, b'guessInput|' + buf + b'\n')
 
 
-def getDeoaep(server, buf: str):
-    # return call_func(server, f'getDeoaep|{buf}\n')
+def getDeoaep(server, buf: bytes):
     return call_func(server, b'getDeoaep|' + buf + b'\n')
 
 
-def runv2(hex_session_key: str):
+def run(hex_session_key: str):
     ts = time.time()
     encKey = binascii.a2b_hex(hex_session_key)
     print(hex_session_key)
@@ -67,7 +64,7 @@ def runv2(hex_session_key: str):
     # 根据已有信息可以推断出 j只会取下面的值
     excepted_j = [0, 1, 2, 4]
     while offset < 1026:
-        print(f'[Progress] {(offset - 2) / 1024 * 100:.2f}% time used {time.time() - ts:.2f}s')
+        print(f'[Progress] {(offset - 2) / 1024 * 100:.2f}% time used {time.time() - ts:.2f}s', end="\r")
         bt = math.floor((offset - 2) / 4)
         offs = math.floor((offset - 2) % 4)
         desired = (encKey[len(encKey) - bt - 1] >> (offs * 2)) & 3
@@ -101,78 +98,32 @@ def runv2(hex_session_key: str):
                 buf[offset] += 1
         else:
             offset += 1
-    print(f'==> time used {time.time() - ts:.2f}s')
-    print("Output", buf)
+    print(f'[Progress] 100% time used {time.time() - ts:.2f}s')
     outp = getDeoaep(servers[0], binascii.b2a_hex(bytes(buf)))
-    print(outp)
+    print(f'clear session_key {outp}')
     if len(outp) < 10:
+        print("Output", buf)
         assert 1 == 0, 'Could not remove padding, probably invalid key'
     return outp
 
 
-def run(hex_session_key: str):
-    ts = time.time()
-    encKey = binascii.a2b_hex(hex_session_key)
-    print(hex_session_key)
-    buf = [0] * 1026
-    offset = 2
-    while offset < 1026:
-        print(f'[Progress] {(offset - 2) / 1024 * 100:.2f}% time used {time.time() - ts:.2f}s')
-        bt = math.floor((offset - 2) / 4)
-        offs = math.floor((offset - 2) % 4)
-        desired = (encKey[len(encKey) - bt - 1] >> (offs * 2)) & 3
-        destail = hex_session_key[len(hex_session_key) - bt * 2:len(hex_session_key)]
-        j = buf[offset]
-        while j < 8:
-            buf[offset] = j
-            st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
-            val = guessInput(st)
-            sub = int(val[len(val) - bt * 2 - 2:len(val) - bt * 2], 16)
-            got = (sub >> (offs * 2)) & 3
-            gtail = val[len(hex_session_key) - bt * 2:len(hex_session_key) + bt * 2]
-            if got == desired and gtail == destail:
-                # if offset % 16 == 2:
-                #     print(val)
-                break
-            j += 1
-        if j == 8:
-            buf[offset] = 0
-            offset -= 1
-            if offset < 2:
-                print('Could not match input')
-                assert 1 == 0, "Could not find proper input encoding"
-            buf[offset] += 1
-            while buf[offset] == 8:
-                buf[offset] = 0
-                offset -= 1
-                if offset < 2:
-                    print('Could not match input')
-                    assert 1 == 0, "Could not find proper input encoding"
-                buf[offset] += 1
-        else:
-            offset += 1
-    print(f'==> time used {time.time() - ts:.2f}s')
-    # print("Output", buf)
-    st = binascii.b2a_hex(bytes(buf)).decode('utf-8')
-    outp = getDeoaep(st)
-    print(outp)
-    if len(outp) < 10:
-        assert 1 == 0, 'Could not remove padding, probably invalid key'
-    print(st)
-    return outp
-
-
-def decrypt_license_keys(session_key: str, context_enc: str, key_infos: dict):
+def decrypt_license_keys(config_name: str, session_key: str, context_enc: str, key_infos: dict):
     cmac_obj = CMAC.new(binascii.a2b_hex(session_key), ciphermod=AES)
     cmac_obj.update(binascii.a2b_hex(context_enc))
 
     enc_cmac_key = cmac_obj.digest()
-
+    lines = []
     for index, [keyId, keyData, keyIv] in key_infos.items():
         cipher = AES.new(enc_cmac_key, AES.MODE_CBC, iv=binascii.a2b_hex(keyIv))
         decrypted_key = cipher.decrypt(binascii.a2b_hex(keyData))
         # clear_key = Padding.unpad(decrypted_key, 16)
-        print(f'<id>:<k> {keyId}:{decrypted_key.hex()}')
+        print(f'{config_name} <id>:<k> {keyId}:{decrypted_key.hex()}')
+        lines.append(f'{keyId}:{decrypted_key.hex()}')
+    p = Path(f'wvkeys.txt')
+    if p.exists() is False:
+        p.touch()
+    old_lines = p.read_text(encoding='utf-8')
+    Path(f'wvkeys.txt').write_text('\n'.join(lines) + '\n' + old_lines, encoding='utf-8')
 
 
 def main():
@@ -184,9 +135,9 @@ def main():
     else:
         path = (Path('.') / 'offline_config_kktv.json').resolve().as_posix()
     config = json.loads(Path(path).read_text(encoding='utf-8'))
-    clear_session_key = runv2(config['enc_session_key'])
+    clear_session_key = run(config['enc_session_key'])
     close()
-    decrypt_license_keys(clear_session_key, config['enc_key'], config['key_infos'])
+    decrypt_license_keys(Path(path).name, clear_session_key, config['enc_key'], config['key_infos'])
     sys.stdin.read()
 
 

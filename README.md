@@ -16,15 +16,21 @@
 
 ## 本地破解
 
-如果是exe版本，直接将`offline_config.json`拖到`wvguesser_v1.3.0.exe`上即可
+如果是exe版本，直接将`offline_config.json`拖到`wvguesser_v1.4.0.exe`上即可
 
 运行程序，等待解密
 
-- `python -m wvguesser.mainv2`
+- `python -m wvguesser.main`
+
+or
+
+- `python -m wvguesser.main offline_config.json`
+
+历史结果将保存至`wvkeys.txt`，最新的key在最前面
 
 根据现有算法，只能是单线程
 
-效果演示，3600X三分钟左右出结果
+效果演示，3600X 175s左右出结果
 
 ![](/images/oCam_2021_07_31_05_10_50_756.gif)
 
@@ -45,7 +51,7 @@ g++ -o main -pthread -std=gnu++0x -static main.cpp misc.cpp codelift.cpp algebra
 # 打包
 
 ```bash
-pyinstaller -n wvguesser_v1.3.0 -F wvguesser\__main__.py
+pyinstaller -n wvguesser_v1.4.0 -F wvguesser\__main__.py
 ```
 
 # 推荐更好的方案

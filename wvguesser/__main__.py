@@ -1,4 +1,4 @@
-from wvguesser.mainv2 import main
+from wvguesser.main import main
 
 if __name__ == '__main__':
     main()
