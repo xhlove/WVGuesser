@@ -24,6 +24,8 @@ with open("WVGuesserConf.json") as json_data:
 
 thread_conf = int(config['thread'])
 notif_conf = str(config['notif'])
+json_conf = str(config['json'])
+main_number = int(config['main_number'])
 
 
 def find_free_port():
@@ -34,7 +36,7 @@ def find_free_port():
 
 servers = []
 clients = []
-for i in range(5):
+for i in range(main_number):
     port = find_free_port()
 
     MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
@@ -139,17 +141,21 @@ def decrypt_license_keys(session_key: str, context_enc: str, key_infos: dict):
     enc_cmac_key = cmac_obj.digest()
 
     list_key = []
+    simple_key = ""
 
     for index, [keyId, keyData, keyIv] in key_infos.items():
         cipher = AES.new(enc_cmac_key, AES.MODE_CBC, iv=binascii.a2b_hex(keyIv))
         decrypted_key = cipher.decrypt(binascii.a2b_hex(keyData))
         # clear_key = Padding.unpad(decrypted_key, 16)
         list_key.append({'id': keyId, 'k': decrypted_key.hex()})
-        # print(f'<id>:<k> {keyId}:{decrypted_key.hex()}')
+        simple_key += f'{keyId}:{decrypted_key.hex()}\n'
 
     if len(list_key) >= 1:
-        json_key = json.dumps(list_key)
-        print(json_key)
+        if json_conf == "True":
+            json_key = json.dumps(list_key)
+            print(json_key)
+        else:
+            print(simple_key)
 
         if notif_conf == "True":
             notification = Notify()
