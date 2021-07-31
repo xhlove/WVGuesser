@@ -1,6 +1,7 @@
 {
-	"thread": 5,
+	"thread": 6,
 	"notif": "True",
 	"json": "True",
-	"main_number": 10
+	"main_number": 6,
+	"version": "1.3.2"
 }
