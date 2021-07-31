@@ -9,15 +9,12 @@ import subprocess
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from random import randint
 from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
 from notifypy import Notify
 import ctypes
 import socket
 
-
-ctypes.windll.kernel32.SetConsoleTitleW("WVGuesser v1.3.0")
 
 with open("WVGuesserConf.json") as json_data:
     config = json.load(json_data)
@@ -26,6 +23,10 @@ thread_conf = int(config['thread'])
 notif_conf = str(config['notif'])
 json_conf = str(config['json'])
 main_number = int(config['main_number'])
+ver = str(config['version'])
+
+
+ctypes.windll.kernel32.SetConsoleTitleW(f"WVGuesser v{ver}")
 
 
 def find_free_port():
@@ -97,7 +98,7 @@ def runv2(hex_session_key: str):
         destail = hex_session_key[len(hex_session_key) - bt * 2:len(hex_session_key)]
         bufs = []
         j = buf[offset]
-        for _j in range(5):
+        for _j in range(main_number):
             buf[offset] = _j
             bufs.append(binascii.b2a_hex(bytes(buf)))
         for _j, val in enumerate(multi_guessInput(bufs)):
@@ -125,7 +126,7 @@ def runv2(hex_session_key: str):
         else:
             offset += 1
     # print(f'==> Elapsed time {time.time() - ts:.2f}s')
-    ctypes.windll.kernel32.SetConsoleTitleW(f'WVGuesser v1.3.0 - Elapsed time {time.time() - ts:.2f}s')
+    ctypes.windll.kernel32.SetConsoleTitleW(f'WVGuesser v{ver} - Elapsed time {time.time() - ts:.2f}s')
     # print("Output", buf)
     outp = getDeoaep(clients[0], binascii.b2a_hex(bytes(buf)))
     # print(outp)
