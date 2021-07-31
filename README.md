@@ -33,8 +33,14 @@
 使用mingw64编译
 
 ```bash
-g++ -o main -pthread -std=gnu++0x -static main.cpp misc.cpp codelift.cpp algebra.cpp allocate.cpp integer.cpp Socket.cpp -lws2_32
+g++ -o main -pthread -std=gnu++0x -static main.cpp misc.cpp codelift.cpp algebra.cpp allocate.cpp integer.cpp -lws2_32
 ```
+
+# **注意 & Attention**
+
+以下报错表明session配置过期(session config is expired)
+
+- `Could not remove padding, probably invalid key` 
 
 # 打包
 

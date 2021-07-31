@@ -3,37 +3,23 @@ import json
 import math
 import time
 import signal
-import socket
 import binascii
 import subprocess
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from random import randint
 from Crypto.Cipher import AES
 from Crypto.Hash import CMAC
 
 
 servers = []
-clients = []
 
 
 def server_setup():
-    ports = []
     for i in range(4):
-        while True:
-            _port = randint(20000, 50000)
-            if _port not in ports:
-                ports.append(_port)
-                break
-        port = ports[-1]
         MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
-        p = subprocess.Popen(f'"{MAIN_EXE}" {port}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen(f'"{MAIN_EXE}"', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         servers.append(p)
-        time.sleep(0.2)
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect(('127.0.0.1', port))
-        clients.append(client)
 
 
 def handle_exit(signum, frame):
@@ -42,33 +28,34 @@ def handle_exit(signum, frame):
 
 def close():
     try:
-        [p.close() for p in clients]
         [p.kill() for p in servers]
     except Exception:
         pass
 
 
-def call_func(client, msg: bytes):
-    client.send(msg)
-    resp = client.recv(1024)
+def call_func(p: subprocess.Popen, msg: str):
+    p.stdin.write(msg)
+    p.stdin.flush()
+    resp = p.stdout.readline()
+    # print('resp', resp.decode('utf-8').strip())
     return resp.decode('utf-8').strip()
 
 
-def multi_guessInput(bufs: List[bytes]):
+def multi_guessInput(bufs: List[str]):
     results = []
     with ThreadPoolExecutor(max_workers=4) as executor:
-        results = executor.map(guessInput, clients, bufs)
+        results = executor.map(guessInput, servers, bufs)
     return results
 
 
-def guessInput(client, buf: bytes):
-    # return call_func(client, f'guessInput|{buf}\n')
-    return call_func(client, b'guessInput|' + buf + b'\n')
+def guessInput(server, buf: str):
+    # return call_func(server, f'guessInput|{buf}\n')
+    return call_func(server, b'guessInput|' + buf + b'\n')
 
 
-def getDeoaep(client, buf: bytes):
-    # return call_func(client, f'getDeoaep|{buf}\n')
-    return call_func(client, b'getDeoaep|' + buf + b'\n')
+def getDeoaep(server, buf: str):
+    # return call_func(server, f'getDeoaep|{buf}\n')
+    return call_func(server, b'getDeoaep|' + buf + b'\n')
 
 
 def runv2(hex_session_key: str):
@@ -116,7 +103,7 @@ def runv2(hex_session_key: str):
             offset += 1
     print(f'==> time used {time.time() - ts:.2f}s')
     print("Output", buf)
-    outp = getDeoaep(clients[0], binascii.b2a_hex(bytes(buf)))
+    outp = getDeoaep(servers[0], binascii.b2a_hex(bytes(buf)))
     print(outp)
     if len(outp) < 10:
         assert 1 == 0, 'Could not remove padding, probably invalid key'
@@ -195,7 +182,7 @@ def main():
     if len(sys.argv) == 2:
         path = sys.argv[1]
     else:
-        path = (Path('.') / 'offline_config.json').resolve().as_posix()
+        path = (Path('.') / 'offline_config_kktv.json').resolve().as_posix()
     config = json.loads(Path(path).read_text(encoding='utf-8'))
     clear_session_key = runv2(config['enc_session_key'])
     close()
