@@ -1,3 +1,9 @@
+# new widevine-l3-guesser is faster more than this version
+
+https://github.com/Satsuoni/widevine-l3-guesser
+
+---
+
 # WVGuesser
 
 `WVGuesser`是[widevine-l3-guesser](https://github.com/Satsuoni/widevine-l3-guesser)的离线版本实现
