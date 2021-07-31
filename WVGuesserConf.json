@@ -1,4 +1,6 @@
 {
-	"thread": 7,
-	"notif": "True"
+	"thread": 5,
+	"notif": "True",
+	"json": "True",
+	"main_number": 10
 }
