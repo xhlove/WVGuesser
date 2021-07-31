@@ -15,7 +15,8 @@ from Crypto.Hash import CMAC
 
 
 servers = []
-excepted_j = list(range(5))
+excepted_j = [0, 1, 2, 4]
+# excepted_j = list(range(5))
 # excepted_j = list(range(8))
 
 if platform.system() == 'Windows':
@@ -25,7 +26,7 @@ else:
 
 
 def server_setup():
-    for i in range(len(excepted_j)):
+    for i in range(8):
         p = subprocess.Popen(f'"{MAIN_EXE}"', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         servers.append(p)
 
@@ -50,8 +51,8 @@ def call_func(p: subprocess.Popen, msg: str):
 
 def multi_guessInput(bufs: List[str]):
     results = []
-    with ThreadPoolExecutor(max_workers=len(excepted_j)) as executor:
-        results = executor.map(guessInput, servers, bufs)
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        results.extend(executor.map(guessInput, servers[:len(bufs)], bufs))
     return results
 
 
@@ -64,12 +65,12 @@ def getDeoaep(server, buf: bytes):
 
 
 def run(hex_session_key: str):
+    global excepted_j
     ts = time.time()
     encKey = binascii.a2b_hex(hex_session_key)
     print(hex_session_key)
     buf = [0] * 1026
     offset = 2
-    # 根据已有信息可以推断出 j只会取下面的值
     while offset < 1026:
         print(f'[Progress] {(offset - 2) / 1024 * 100:.2f}% time used {time.time() - ts:.2f}s', end="\r")
         bt = math.floor((offset - 2) / 4)
@@ -78,17 +79,35 @@ def run(hex_session_key: str):
         destail = hex_session_key[len(hex_session_key) - bt * 2:len(hex_session_key)]
         bufs = []
         j = buf[offset]
-        for _j in excepted_j:
-            buf[offset] = _j
-            bufs.append(binascii.b2a_hex(bytes(buf)))
-        for _j, val in zip(excepted_j, multi_guessInput(bufs)):
-            sub = int(val[len(val) - bt * 2 - 2:len(val) - bt * 2], 16)
-            got = (sub >> (offs * 2)) & 3
-            gtail = val[len(hex_session_key) - bt * 2:len(hex_session_key) + bt * 2]
-            if got == desired and gtail == destail:
+        if len(excepted_j) != 8 and offset + 8 > 1026:
+            excepted_j = list(range(8))
+        if offset + 8 < 1026:
+            for _j in excepted_j:
                 buf[offset] = _j
-                j = buf[offset]
-                break
+                bufs.append(binascii.b2a_hex(bytes(buf)))
+            j = 7
+            buf[offset] = 7
+            results = list(multi_guessInput(bufs))
+            for _j, val in zip(excepted_j, results):
+                sub = int(val[len(val) - bt * 2 - 2:len(val) - bt * 2], 16)
+                got = (sub >> (offs * 2)) & 3
+                gtail = val[len(hex_session_key) - bt * 2:len(hex_session_key) + bt * 2]
+                if got == desired and gtail == destail:
+                    j = _j
+                    buf[offset] = _j
+                    break
+                j = _j + 1
+        else:
+            while j < 8:
+                buf[offset] = j
+                st = binascii.b2a_hex(bytes(buf))
+                val = guessInput(servers[0], st)
+                sub = int(val[len(val) - bt * 2 - 2:len(val) - bt * 2], 16)
+                got = (sub >> (offs * 2)) & 3
+                gtail = val[len(hex_session_key) - bt * 2:len(hex_session_key) + bt * 2]
+                if got == desired and gtail == destail:
+                    break
+                j += 1
         if j == 8:
             buf[offset] = 0
             offset -= 1
@@ -140,7 +159,7 @@ def main():
     if len(sys.argv) == 2:
         path = sys.argv[1]
     else:
-        path = (Path('.') / 'offline_config_kktv.json').resolve().as_posix()
+        path = (Path('.') / 'offline_config_7.json').resolve().as_posix()
     config = json.loads(Path(path).read_text(encoding='utf-8'))
     clear_session_key = run(config['enc_session_key'])
     close()
