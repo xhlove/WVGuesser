@@ -28,7 +28,7 @@ def server_setup():
                 break
         port = ports[-1]
         MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
-        p = subprocess.Popen(f'{MAIN_EXE} {port}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen(f'"{MAIN_EXE}" {port}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         servers.append(p)
         time.sleep(0.2)
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
