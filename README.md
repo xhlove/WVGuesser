@@ -28,6 +28,25 @@ Demo
 
 ![](https://i.imgur.com/T1Px1T9.png)
 
+# Configuration file
+
+Default Config:
+
+```json
+{
+	"thread": 5,
+	"notif": "True",
+	"json": "True",
+	"main_number": 5,
+	"version": "1.3.2"
+}
+```
+
+
+# Warning
+
+Do not change anything in the configuration file unless you know what you are doing.
+
 
 # Build
 
