@@ -45,7 +45,7 @@ Default Config:
 
 # Warning
 
-Do not change anything in the configuration file unless you know what you are doing.
+Do not change **anything** in the configuration file unless you know what you are doing.
 
 
 # Build
