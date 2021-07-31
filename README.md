@@ -16,7 +16,7 @@
 
 ## 本地破解
 
-如果是exe版本，直接将`offline_config.json`拖到`wvguesser_v1.2.0.exe`上即可
+如果是exe版本，直接将`offline_config.json`拖到`wvguesser_v1.3.0.exe`上即可
 
 运行程序，等待解密
 
@@ -39,7 +39,7 @@ g++ -o main -pthread -std=gnu++0x -static main.cpp misc.cpp codelift.cpp algebra
 # 打包
 
 ```bash
-pyinstaller -n wvguesser_v1.2.0 -F wvguesser\__main__.py
+pyinstaller -n wvguesser_v1.3.0 -F wvguesser\__main__.py
 ```
 
 # 推荐更好的方案
