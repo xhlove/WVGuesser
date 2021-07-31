@@ -13,10 +13,12 @@ from Crypto.Hash import CMAC
 
 
 servers = []
+excepted_j = list(range(5))
+# excepted_j = list(range(8))
 
 
 def server_setup():
-    for i in range(4):
+    for i in range(len(excepted_j)):
         MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
         p = subprocess.Popen(f'"{MAIN_EXE}"', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         servers.append(p)
@@ -42,7 +44,7 @@ def call_func(p: subprocess.Popen, msg: str):
 
 def multi_guessInput(bufs: List[str]):
     results = []
-    with ThreadPoolExecutor(max_workers=4) as executor:
+    with ThreadPoolExecutor(max_workers=len(excepted_j)) as executor:
         results = executor.map(guessInput, servers, bufs)
     return results
 
@@ -62,7 +64,6 @@ def run(hex_session_key: str):
     buf = [0] * 1026
     offset = 2
     # 根据已有信息可以推断出 j只会取下面的值
-    excepted_j = [0, 1, 2, 4]
     while offset < 1026:
         print(f'[Progress] {(offset - 2) / 1024 * 100:.2f}% time used {time.time() - ts:.2f}s', end="\r")
         bt = math.floor((offset - 2) / 4)
