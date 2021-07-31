@@ -1,8 +1,10 @@
+
 import sys
 import json
 import math
 import time
 import signal
+import platform
 import binascii
 import subprocess
 from typing import List
@@ -16,10 +18,14 @@ servers = []
 excepted_j = list(range(5))
 # excepted_j = list(range(8))
 
+if platform.system() == 'Windows':
+    MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
+else:
+    MAIN_EXE = (Path('.') / 'main').resolve().as_posix()
+
 
 def server_setup():
     for i in range(len(excepted_j)):
-        MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
         p = subprocess.Popen(f'"{MAIN_EXE}"', shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         servers.append(p)
 
