@@ -20,9 +20,9 @@ excepted_j = [0, 1, 2, 4]
 # excepted_j = list(range(8))
 
 if platform.system() == 'Windows':
-    MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
+    MAIN_EXE = (Path(sys.argv[0]).parent / 'main.exe').resolve().as_posix()
 else:
-    MAIN_EXE = (Path('.') / 'main').resolve().as_posix()
+    MAIN_EXE = (Path(sys.argv[0]).parent / 'main').resolve().as_posix()
 
 
 def server_setup():
