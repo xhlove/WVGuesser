@@ -51,7 +51,7 @@ Do not change **anything** in the configuration file unless you know what you ar
 # Build
 
 ```bash
-pyinstaller -n wvguesser_v1.3.1 -F wvguesser\__main__.py
+pyinstaller -n wvguesser_v1.3.2 -F wvguesser\__main__.py
 ```
 
 # Changes done
