@@ -16,15 +16,24 @@ from Crypto.Hash import CMAC
 
 servers = []
 clients = []
-for i in range(5):
-    port = randint(20000, 50000)
-    MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
-    p = subprocess.Popen(f'{MAIN_EXE} {port}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    servers.append(p)
-    time.sleep(0.3)
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(('127.0.0.1', port))
-    clients.append(client)
+
+
+def server_setup():
+    ports = []
+    for i in range(4):
+        while True:
+            _port = randint(20000, 50000)
+            if _port not in ports:
+                ports.append(_port)
+                break
+        port = ports[-1]
+        MAIN_EXE = (Path('.') / 'main.exe').resolve().as_posix()
+        p = subprocess.Popen(f'{MAIN_EXE} {port}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        servers.append(p)
+        time.sleep(0.2)
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect(('127.0.0.1', port))
+        clients.append(client)
 
 
 def handle_exit(signum, frame):
@@ -47,7 +56,7 @@ def call_func(client, msg: bytes):
 
 def multi_guessInput(bufs: List[bytes]):
     results = []
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         results = executor.map(guessInput, clients, bufs)
     return results
 
@@ -68,6 +77,8 @@ def runv2(hex_session_key: str):
     print(hex_session_key)
     buf = [0] * 1026
     offset = 2
+    # 根据已有信息可以推断出 j只会取下面的值
+    excepted_j = [0, 1, 2, 4]
     while offset < 1026:
         print(f'[Progress] {(offset - 2) / 1024 * 100:.2f}% time used {time.time() - ts:.2f}s')
         bt = math.floor((offset - 2) / 4)
@@ -76,10 +87,10 @@ def runv2(hex_session_key: str):
         destail = hex_session_key[len(hex_session_key) - bt * 2:len(hex_session_key)]
         bufs = []
         j = buf[offset]
-        for _j in range(5):
+        for _j in excepted_j:
             buf[offset] = _j
             bufs.append(binascii.b2a_hex(bytes(buf)))
-        for _j, val in enumerate(multi_guessInput(bufs)):
+        for _j, val in zip(excepted_j, multi_guessInput(bufs)):
             sub = int(val[len(val) - bt * 2 - 2:len(val) - bt * 2], 16)
             got = (sub >> (offs * 2)) & 3
             gtail = val[len(hex_session_key) - bt * 2:len(hex_session_key) + bt * 2]
@@ -178,6 +189,7 @@ def decrypt_license_keys(session_key: str, context_enc: str, key_infos: dict):
 
 
 def main():
+    server_setup()
     signal.signal(signal.SIGINT, handle_exit)
     signal.signal(signal.SIGTERM, handle_exit)
     if len(sys.argv) == 2:
